@@ -88,46 +88,28 @@ export class TableTopManager {
 
         // Round
         if (this.id === 'round') {
-            if (l <= 1200) return { tight: 6, comfort: 4 }; // Table says 1200 Tight 6. Comfort? Empty. Let's assume 4 or 5. Current code used 6/6.
-            if (l <= 1300) return { tight: 6, comfort: 6 }; // 1300 Comfort 6.
-            if (l <= 1400) return { tight: 7, comfort: 6 }; // 1400 Tight 7, Comfort 6.
-            if (l <= 1500) return { tight: 7, comfort: 7 }; // 1500 Comfort 7.
-            return { tight: 8, comfort: 7 };                // 1580 Tight 8.
+            if (l <= 1200) return { tight: 6, comfort: 6 };
+            if (l <= 1300) return { tight: 6, comfort: 6 };
+            if (l <= 1400) return { tight: 7, comfort: 6 };
+            if (l <= 1500) return { tight: 7, comfort: 7 };
+            return { tight: 8, comfort: 7 };
         }
 
         // Square
         if (this.id === 'square') {
-            if (l <= 1300) return { tight: 8, comfort: 6 }; // 1200-1300 Comfort 6.
-            return { tight: 12, comfort: 8 };               // 1400+ Comfort 8.
+            if (l <= 1300) return { tight: 6, comfort: 6 };
+            return { tight: 8, comfort: 8 };
         }
 
         // Rectangle
-        // 1200-1300: T6, C4
-        if (l <= 1399) return { tight: 6, comfort: 4 }; // Includes 1200, 1300. 1400 is next block.
-
-        // 1400: C4. (Tight 6)
-        if (l < 1500) return { tight: 6, comfort: 4 };
-
-        // 1500-1700: C6. (Tight 8? Standard usually allows +2)
-        if (l < 1800) return { tight: 8, comfort: 6 };
-
-        // 1800-1900: T8, C6
-        if (l < 2000) return { tight: 8, comfort: 6 };
-
-        // 2000-2300: C8. (Tight 10)
-        if (l < 2400) return { tight: 10, comfort: 8 };
-
-        // 2400-2500: T10, C8
-        if (l < 2600) return { tight: 10, comfort: 8 };
-
-        // 2600-2900: C10 (Tight 12)
-        if (l < 3000) return { tight: 12, comfort: 10 };
-
-        // 3000: T12, C10
-        if (l < 3100) return { tight: 12, comfort: 10 };
-
-        // 3100+: C12 (Tight 14)
-        return { tight: 14, comfort: 12 };
+        if (l <= 1400) return { tight: 6, comfort: 4 };
+        if (l <= 1700) return { tight: 6, comfort: 6 };
+        if (l <= 1900) return { tight: 8, comfort: 6 };
+        if (l <= 2300) return { tight: 8, comfort: 8 };
+        if (l <= 2500) return { tight: 10, comfort: 8 };
+        if (l <= 2900) return { tight: 10, comfort: 10 };
+        if (l <= 3000) return { tight: 12, comfort: 10 };
+        return { tight: 12, comfort: 12 };
     }
 
     getPrice(): number {

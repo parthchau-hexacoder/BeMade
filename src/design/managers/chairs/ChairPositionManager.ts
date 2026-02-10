@@ -61,7 +61,7 @@ export class ChairPositionManager {
       return;
     }
 
-    if (count % 2 === 0 && count >= 0 && count <= 12) {
+    if (count % 2 === 0 && count >= 0) {
       this.totalChairs = count;
     }
   }

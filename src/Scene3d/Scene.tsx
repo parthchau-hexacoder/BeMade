@@ -20,9 +20,9 @@ type Props = {
 };
 
 const SceneContents = observer(() => {
-  const { table } = useDesign();
+  const { table, chair } = useDesign();
   const { camera } = useDesign3D();
-  const shadowKey = `${table.top.id}-${table.base.id}-${camera.currentView}`;
+  const shadowKey = `${table.top.id}-${table.base.id}-${table.top.length}-${table.top.width}-${chair.id}-${chair.position.totalChairs}-${camera.currentView}`;
   const showChairPreview = camera.currentView === "chair";
   const showChairsAny =
     camera.currentView === "chair" ||
