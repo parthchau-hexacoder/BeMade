@@ -1,5 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
+import { useLocation } from "react-router-dom";
 import { useAppActions } from "../../app/hooks/useAppActions";
 
 export type NavItem = {
@@ -19,56 +20,68 @@ export const NAV_ITEMS: NavItem[] = [
 
 export const Navbar: React.FC = observer(() => {
   const { ui, onNavClick } = useAppActions();
+  const location = useLocation();
   const activeId = ui.activeNavId;
+  const isCheckoutRoute = location.pathname === "/checkout";
 
   return (
-    <header className="w-full border-b border-gray-200 bg-white">
-      <div className="mx-auto flex flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between md:px-6 md:py-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="text-3xl font-light tracking-wide text-black">
-            <img className="h-8 md:h-10" src="/assets/images/header_logo.svg" alt="" />
+    <header className="w-full border-b border-gray-300 shadow-xl shadow-zinc-900">
+      <div className="mx-auto flex h-[84px] items-center justify-between px-4 md:px-7">
+        <img
+          className="h-9 md:h-12"
+          src="/assets/images/header_logo.svg"
+          alt="BeMade"
+        />
+
+        {!isCheckoutRoute && (
+          <div className="hidden items-center gap-8 md:flex lg:gap-10">
+            <nav className="flex items-center gap-8 lg:gap-10">
+              {NAV_ITEMS.map((item) => {
+                const isActive = item.id === activeId;
+
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => onNavClick(item.id)}
+                    className={`relative pb-1 text-[14px] tracking-[0.04em] transition-colors cursor-pointer lg:text-[15px] ${
+                      isActive
+                        ? "font-semibold text-[#3e4f62]"
+                        : "font-normal text-[#444c58] hover:text-black"
+                    }`}
+                  >
+                    {item.label}
+                    {isActive && (
+                      <span className="absolute -bottom-[7px] left-0 h-[2px] w-full bg-[#3e4f62]" />
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+            <div className="flex items-center gap-5 lg:gap-6">
+              <button
+                type="button"
+                className="text-[14px] font-medium text-black transition hover:text-gray-700 lg:text-[15px]"
+              >
+                Login / Register
+              </button>
+              <button
+                onClick={ui.openOrderModal}
+                className="rounded-full bg-black px-6 py-2.5 text-[14px] font-medium text-white transition hover:bg-gray-800 lg:text-[15px]"
+              >
+                Order Sample
+              </button>
+            </div>
           </div>
+        )}
+
+        {!isCheckoutRoute && (
           <button
             onClick={ui.openOrderModal}
             className="inline-flex items-center rounded-full bg-black px-4 py-2 text-xs font-medium text-white transition hover:bg-gray-800 md:hidden"
           >
             Order Sample
           </button>
-        </div>
-
-        <nav className="hidden items-center gap-6 overflow-x-auto whitespace-nowrap pb-1 md:flex md:overflow-visible md:pb-0">
-          {NAV_ITEMS.map((item) => {
-            const isActive = item.id === activeId;
-
-            return (
-              <button
-                key={item.id}
-                onClick={() => onNavClick(item.id)}
-                className={`
-                  relative pb-1 text-xs tracking-widest transition-colors cursor-pointer sm:text-sm md:text-md
-                  ${
-                    isActive
-                      ? "font-semibold text-black"
-                      : "font-normal text-gray-400 hover:text-black"
-                  }
-                `}
-              >
-                {item.label}
-
-                {isActive && (
-                  <span className="absolute left-0 right-0 -bottom-1.5 h-0.5 bg-black" />
-                )}
-              </button>
-            );
-          })}
-        </nav>
-
-        <button
-          onClick={ui.openOrderModal}
-          className="hidden rounded-full bg-black px-6 py-2 text-sm font-medium text-white transition hover:bg-gray-800 cursor-pointer md:inline-flex"
-        >
-          Order Sample
-        </button>
+        )}
       </div>
     </header>
   );
