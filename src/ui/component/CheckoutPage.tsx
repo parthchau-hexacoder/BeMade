@@ -1,7 +1,9 @@
 import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 import { useAppActions } from '../../app/hooks/useAppActions';
 import { useLocation } from 'react-router-dom';
 import { useDesign } from '../../app/providers/DesignProvider';
+import { TermsConditionsModal } from './TermsConditionsModal';
 const toTitle = (value: string) =>
     value
         .replace(/[_-]+/g, ' ')
@@ -23,6 +25,15 @@ export const CheckoutPage = observer(() => {
     const { onBackToDesign } = useAppActions();
     const location = useLocation();
     const isSamplesOnlyCheckout = new URLSearchParams(location.search).get('mode') === 'samples';
+    const [isTermsOpen, setIsTermsOpen] = useState(false);
+    const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
+    const tablePrice = table.top.getPrice();
+    const chairPrice = chair.getPrice();
+    const designTotal = tablePrice + chairPrice;
+    const payableTotal = isSamplesOnlyCheckout ? samplesPrice : designTotal;
+
+    const formatGBP = (amount: number) =>
+        `\u00a3${amount.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
     const formatLabel = (id: string) =>
         id
@@ -104,10 +115,21 @@ export const CheckoutPage = observer(() => {
                         >
                             &#8249; Back to Design
                         </button>
-                        <button className="h-11 px-6 rounded-full bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition">
+                        <button
+                            type="button"
+                            onClick={() => setIsTermsOpen(true)}
+                            className="h-11 px-6 rounded-full bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition"
+                        >
                             Terms &amp; Conditions
                         </button>
-                        <button className="h-11 px-6 rounded-full bg-gray-200 text-gray-500 text-sm font-semibold cursor-not-allowed">
+                        <button
+                            type="button"
+                            disabled={!hasAcceptedTerms}
+                            className={`h-11 px-6 rounded-full text-sm font-semibold transition ${hasAcceptedTerms
+                                ? 'bg-black text-white hover:bg-gray-800'
+                                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                }`}
+                        >
                             Pay Now &gt;
                         </button>
                     </div>
@@ -115,15 +137,24 @@ export const CheckoutPage = observer(() => {
                     {isSamplesOnlyCheckout && (
                         <div className="mt-10 rounded-2xl border border-gray-200 bg-white p-5 md:p-6">
                             <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-3">Selected Samples</h2>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-5">
                                 {samples.length > 0 ? (
                                     samples.map((sample) => (
-                                        <span
+                                        <div
                                             key={sample}
-                                            className="rounded-full border border-gray-300 bg-gray-50 px-3 py-1 text-sm text-gray-700"
+                                            className="relative overflow-hidden rounded-xl border border-gray-300"
                                         >
-                                            {formatLabel(sample)}
-                                        </span>
+                                            <div className="absolute right-1.5 top-1.5 z-10 h-5 w-5 rounded-full bg-white/95 shadow">
+                                                <svg viewBox="0 0 24 24" className="h-full w-full p-1 text-black" fill="none">
+                                                    <path d="M6 12.5l3.2 3.2L18 7.9" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </div>
+                                            <img
+                                                src={`/assets/images/top-color/${sample}/preview.webp`}
+                                                alt={formatLabel(sample)}
+                                                className="aspect-square w-full object-cover"
+                                            />
+                                        </div>
                                     ))
                                 ) : (
                                     <p className="text-sm text-gray-500">No samples selected.</p>
@@ -202,9 +233,42 @@ export const CheckoutPage = observer(() => {
                                 <SummaryRow label="Samples Total" value={`GBP ${samplesPrice}`} />
                             )}
                         </div>
+                        <div className="mt-5 border-t border-gray-200 pt-4">
+                            {!isSamplesOnlyCheckout && (
+                                <div className="mb-2 flex items-center justify-between">
+                                    <span className="text-sm text-gray-600">Dining Table</span>
+                                    <span className="text-sm text-gray-900">{formatGBP(tablePrice)}</span>
+                                </div>
+                            )}
+                            {!isSamplesOnlyCheckout && chair.position.totalChairs > 0 && (
+                                <div className="mb-2 flex items-center justify-between">
+                                    <span className="text-sm text-gray-600">Dining Chairs ({chair.position.totalChairs})</span>
+                                    <span className="text-sm text-gray-900">{formatGBP(chairPrice)}</span>
+                                </div>
+                            )}
+                            {isSamplesOnlyCheckout && (
+                                <div className="mb-2 flex items-center justify-between">
+                                    <span className="text-sm text-gray-600">Sample Pack</span>
+                                    <span className="text-sm text-gray-900">{formatGBP(samplesPrice)}</span>
+                                </div>
+                            )}
+                            <div className="mt-2 flex items-center justify-between border-t border-gray-100 pt-3">
+                                <span className="text-base font-semibold text-gray-900">Total Payable</span>
+                                <span className="text-lg font-bold text-gray-900">{formatGBP(payableTotal)}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+            <TermsConditionsModal
+                open={isTermsOpen}
+                onClose={() => setIsTermsOpen(false)}
+                hasAccepted={hasAcceptedTerms}
+                onAgree={() => {
+                    setHasAcceptedTerms(true);
+                    setIsTermsOpen(false);
+                }}
+            />
         </div>
     );
 });

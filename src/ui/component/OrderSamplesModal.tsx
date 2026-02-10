@@ -200,10 +200,17 @@ export const OrderSamplesModal = observer(({ open, onClose }: Props) => {
                       `}
                       title={formatLabel(material)}
                     >
+                      {isSelected && (
+                        <div className="absolute right-1.5 top-1.5 z-10 h-5 w-5 rounded-full bg-white/95 shadow">
+                          <svg viewBox="0 0 24 24" className="h-full w-full p-1 text-black" fill="none">
+                            <path d="M6 12.5l3.2 3.2L18 7.9" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                      )}
                       <img
                         src={`/assets/images/top-color/${material}/preview.webp`}
                         alt={formatLabel(material)}
-                        className="h-20 w-full object-cover sm:h-24 md:h-[96px]"
+                        className="aspect-square w-full object-cover"
                       />
                     </button>
                   );
