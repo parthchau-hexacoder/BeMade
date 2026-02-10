@@ -29,7 +29,6 @@ const SceneContents = observer(() => {
     camera.currentView === "rightTop" ||
     camera.currentView === "topWithChairs";
   const showContactShadows = !showChairPreview;
-  camera.animateToView('front')
 
   return (
     <>
