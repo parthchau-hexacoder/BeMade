@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDesign } from "../providers/DesignProvider";
 import { useUI } from "../providers/UIProvider";
+import { DESIGN_STORAGE_KEY } from "../constants/storage";
 
 export const useAppActions = () => {
   const ui = useUI();
@@ -77,7 +78,7 @@ export const useAppActions = () => {
       savedAt: new Date().toISOString(),
     };
 
-    localStorage.setItem("be-made-design", JSON.stringify(payload));
+    localStorage.setItem(DESIGN_STORAGE_KEY, JSON.stringify(payload));
     ui.showActionMessage("Saved locally");
   }, [design, ui]);
 
