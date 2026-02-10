@@ -71,8 +71,10 @@ export class ChairPositionManager {
       case "rectangle":
       case "oblong":
       case "capsule":
-      case "oval":
         return this.computeRectangleLikeChairs();
+
+      case "oval":
+        return this.computeOvalChairs();
 
       case "round":
         return this.computeCircleChairs();
@@ -105,6 +107,78 @@ export class ChairPositionManager {
     });
   }
 
+
+  private computeOvalChairs(): ChairTransform[] {
+    if (this.totalChairs <= 0) {
+      return [];
+    }
+
+    const a = this.tableTop.length / 2000 + this.chairOffset;
+    const b = this.tableTop.width / 2000 + this.chairOffset;
+    const startAngle = -Math.PI / 2;
+    const samples = Math.max(360, this.totalChairs * 120);
+
+    const points: Array<{ x: number; z: number }> = [];
+    const cumulativeLengths: number[] = [0];
+
+    for (let i = 0; i <= samples; i++) {
+      const t = (i / samples) * Math.PI * 2 + startAngle;
+      const x = Math.cos(t) * a;
+      const z = Math.sin(t) * b;
+      points.push({ x, z });
+
+      if (i > 0) {
+        const prev = points[i - 1];
+        const dx = x - prev.x;
+        const dz = z - prev.z;
+        const segLen = Math.hypot(dx, dz);
+        cumulativeLengths.push(cumulativeLengths[i - 1] + segLen);
+      }
+    }
+
+    const totalLength = cumulativeLengths[cumulativeLengths.length - 1];
+    const step = totalLength / this.totalChairs;
+
+    const result: ChairTransform[] = [];
+    for (let i = 0; i < this.totalChairs; i++) {
+      const targetLength = i * step;
+
+      let low = 0;
+      let high = cumulativeLengths.length - 1;
+      while (low < high) {
+        const mid = Math.floor((low + high) / 2);
+        if (cumulativeLengths[mid] < targetLength) {
+          low = mid + 1;
+        } else {
+          high = mid;
+        }
+      }
+
+      const idx = Math.max(1, low);
+      const prevLen = cumulativeLengths[idx - 1];
+      const nextLen = cumulativeLengths[idx];
+      const span = Math.max(1e-6, nextLen - prevLen);
+      const alpha = (targetLength - prevLen) / span;
+
+      const p0 = points[idx - 1];
+      const p1 = points[idx];
+      const x = p0.x + (p1.x - p0.x) * alpha;
+      const z = p0.z + (p1.z - p0.z) * alpha;
+
+      // Inward ellipse normal: chairs face table edge rather than table center.
+      const inwardX = -x / (a * a);
+      const inwardZ = -z / (b * b);
+      const yaw = Math.atan2(inwardX, inwardZ);
+
+      result.push({
+        index: i,
+        position: [x, 0, z],
+        rotation: [0, yaw, 0],
+      });
+    }
+
+    return result;
+  }
 
   private computeRectangleLikeChairs(): ChairTransform[] {
     const { longSide, shortSide } = this.resolveSeatDistribution(this.totalChairs);

@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo } from "react";
-import { useGLTF, useTexture } from "@react-three/drei";
+import { ContactShadows, useGLTF, useTexture } from "@react-three/drei";
 import { setupTexture } from "../../utility/setupTexture";
 import { useDesign } from "../../../app/providers/DesignProvider";
 
@@ -116,8 +116,6 @@ export const ChairsPreview = observer(() => {
     },
   ], []);
 
-  console.log(legTexture)
-
   return (
     <>
       {chairs.map((chairItem) => (
@@ -129,6 +127,15 @@ export const ChairsPreview = observer(() => {
           topMaterial={topMaterial}
         />
       ))}
+      <ContactShadows
+        key={`chair-preview-shadow-${manager.id}-${manager.materialId}`}
+        position={[0, 0, 0]}
+        scale={3}
+        blur={0.55}
+        far={1.2}
+        opacity={0.6}
+        frames={1}
+      />
     </>
   );
 });
