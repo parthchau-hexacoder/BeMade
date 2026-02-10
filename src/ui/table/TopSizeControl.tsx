@@ -159,7 +159,7 @@ export const TopSizeControl = observer(() => {
                     manager.setLength(val);
                 }}
                 onCommit={() => {
-                    camera.animateToView("front", 1.8);
+                    camera.animateToView("top", 1.8);
                 }}
             />
 

@@ -56,6 +56,11 @@ export class TableTopManager {
         return valid[valid.length - 1];
     }
 
+    getMaxWidth() {
+        const valid = this.getValidWidths();
+        return valid[valid.length - 1];
+    }
+
     getValidLengths() {
         if (this.id === 'round' || this.id === 'square') {
             return [1200, 1300, 1400, 1500, 1580];

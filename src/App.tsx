@@ -1,21 +1,45 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { Scene } from "./Scene3d/Scene"
-import { NAV_ITEMS, Navbar } from "./ui/component/Navbar";
+import { Navbar } from "./ui/component/Navbar";
 import { SummaryFooter } from "./ui/component/SummaryFooter";
-import { CameraCarousel } from "./ui/component/CameraCarousel";
 import TableControls from "./ui/table/TableControls"
 import { OrderSamplesModal } from "./ui/component/OrderSamplesModal";
 import { CheckoutPage } from "./ui/component/CheckoutPage";
+import { useDesign } from "./app/providers/DesignProvider";
+import { ScenePanel } from "./ui/component/ScenePanel";
+import { MobileNav } from "./ui/component/MobileNav";
 
 const App = () => {
   const [isOrderModalOpen, setOrderModalOpen] = useState(false);
   const [isSceneLoading, setSceneLoading] = useState(true);
   const [hasSceneReady, setHasSceneReady] = useState(false);
   const [activeNavId, setActiveNavId] = useState('base');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const sceneWrapRef = useRef<HTMLDivElement | null>(null);
+  const messageTimeoutRef = useRef<number | null>(null);
+  const design = useDesign();
   const navigate = useNavigate();
   const location = useLocation();
   const isDesignRoute = location.pathname === "/";
+
+  const showMessage = useCallback((message: string) => {
+    setActionMessage(message);
+    if (messageTimeoutRef.current) {
+      window.clearTimeout(messageTimeoutRef.current);
+    }
+    messageTimeoutRef.current = window.setTimeout(() => {
+      setActionMessage(null);
+    }, 2000);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (messageTimeoutRef.current) {
+        window.clearTimeout(messageTimeoutRef.current);
+      }
+    };
+  }, []);
   const handleNavClick = (id: string) => {
     setActiveNavId(id);
     if (!isDesignRoute) {
@@ -37,6 +61,60 @@ const App = () => {
   const handlePlaceOrder = () => navigate("/checkout");
   const handleBackToDesign = () => navigate("/");
 
+  const handleSave = useCallback(async () => {
+    const payload = {
+      table: {
+        top: {
+          id: design.table.top.id,
+          length: design.table.top.length,
+          width: design.table.top.width,
+          materialId: design.table.top.materialId,
+        },
+        base: {
+          id: design.table.base.id,
+          materialId: design.table.base.materialId,
+        },
+      },
+      chair: {
+        id: design.chair.id,
+        materialId: design.chair.materialId,
+        totalChairs: design.chair.position.totalChairs,
+      },
+      samples: design.samples,
+      savedAt: new Date().toISOString(),
+    };
+    localStorage.setItem("be-made-design", JSON.stringify(payload));
+    showMessage("Saved locally");
+  }, [design, showMessage]);
+
+  const handleToggleFullscreen = useCallback(async () => {
+    const container = sceneWrapRef.current;
+    if (!container) {
+      return;
+    }
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else if (container.requestFullscreen) {
+        await container.requestFullscreen();
+      } else {
+        showMessage("Fullscreen not supported");
+      }
+    } catch (error) {
+      showMessage("Fullscreen failed");
+    }
+  }, [showMessage]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement === sceneWrapRef.current);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <Navbar
@@ -50,46 +128,18 @@ const App = () => {
           element={
             <>
               <div className="flex flex-1 w-full flex-col gap-2 overflow-hidden bg-white p-2 relative md:flex-row md:gap-4 md:p-4">
-                <div className="h-[42vh] min-h-65 w-full overflow-hidden rounded-xl relative flex items-center justify-center md:h-full md:w-[70%] md:rounded-2xl">
-                  <Scene
-                    className="w-full h-full"
-                    onLoadingChange={setSceneLoading}
-                    onInitialLoadComplete={handleInitialLoadComplete}
-                  />
-                  {isSceneLoading && (
-                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-lg border-2 border-gray-300 bg-white/90 shadow-sm">
-                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
-                      </div>
-                    </div>
-                  )}
-                  <div className="absolute bottom-4 left-0 right-0 flex justify-center md:bottom-6">
-                    <CameraCarousel />
-                  </div>
-                </div>
+                <ScenePanel
+                  containerRef={sceneWrapRef}
+                  isFullscreen={isFullscreen}
+                  isSceneLoading={isSceneLoading}
+                  onLoadingChange={setSceneLoading}
+                  onInitialLoadComplete={handleInitialLoadComplete}
+                  onSave={handleSave}
+                  onToggleFullscreen={handleToggleFullscreen}
+                  actionMessage={actionMessage}
+                />
 
-                <div className="md:hidden">
-                  <nav className="flex items-center gap-6 overflow-x-auto whitespace-nowrap border-b border-gray-200 px-2 pb-2">
-                    {NAV_ITEMS.map((item) => {
-                      const isActive = item.id === activeNavId;
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={() => handleNavClick(item.id)}
-                          className={`
-                            relative pb-1 text-xs tracking-widest transition-colors cursor-pointer
-                            ${isActive ? "font-semibold text-black" : "font-normal text-gray-400 hover:text-black"}
-                          `}
-                        >
-                          {item.label}
-                          {isActive && (
-                            <span className="absolute left-0 right-0 -bottom-1.5 h-0.5 bg-black" />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </nav>
-                </div>
+                <MobileNav activeId={activeNavId} onNavClick={handleNavClick} />
 
                 <TableControls
                   onPlaceOrder={handlePlaceOrder}

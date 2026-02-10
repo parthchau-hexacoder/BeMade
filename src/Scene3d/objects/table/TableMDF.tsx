@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { observer } from 'mobx-react-lite';
 import { useGLTF, useTexture } from '@react-three/drei';
 import { useEffect, useMemo } from 'react';
+import { applyTextureCut } from '../../utility/applyTextureCut';
 import { setupTexture } from '../../utility/setupTexture';
 import { useDesign } from '../../../app/providers/DesignProvider';
 
@@ -34,6 +35,27 @@ export const TableMDF = observer(() => {
     setupTexture(textures.roughnessMap);
     setupTexture(textures.normalMap);
   }, [
+    textures.map,
+    textures.metalnessMap,
+    textures.roughnessMap,
+    textures.normalMap,
+  ]);
+
+  const textureRepeat = useMemo(() => {
+    const maxLength = manager.getMaxLength();
+    const maxWidth = manager.getMaxWidth();
+    const x = Math.min(1, manager.length / maxLength);
+    const z = Math.min(1, manager.width / maxWidth);
+    return [x, z] as [number, number];
+  }, [manager.length, manager.width, manager.id]);
+
+  useEffect(() => {
+    applyTextureCut(textures.map, textureRepeat);
+    applyTextureCut(textures.metalnessMap, textureRepeat);
+    applyTextureCut(textures.roughnessMap, textureRepeat);
+    applyTextureCut(textures.normalMap, textureRepeat);
+  }, [
+    textureRepeat,
     textures.map,
     textures.metalnessMap,
     textures.roughnessMap,

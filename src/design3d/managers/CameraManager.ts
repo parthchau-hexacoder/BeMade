@@ -28,8 +28,9 @@ export class CameraManager {
     max = 6;
 
     currentView: CameraViewPreset = "front";
+    isMobile = false;
 
-    private views: Record<CameraViewPreset, CameraPose> = {
+    private desktopViews: Record<CameraViewPreset, CameraPose> = {
         front: { position: [0, 1.1, 3.6], target: [0, 0.6, 0] },
         left: { position: [-3.082351622444384, 0.87, 1], target: [0, 0.6, 0] },
         top: { position: [0, 4.2, 0.01], target: [0, 0, 0], fov: 50 },
@@ -38,9 +39,28 @@ export class CameraManager {
         rightTop: { position: [3.318, 2.332, 2.438], target: [0.318, 0.332, -0.161], fov: 42 },
         topWithChairs: { position: [0, 4.0, 0.01], target: [0, 0, 0], fov: 52 },
     };
+    private mobileViews: Record<CameraViewPreset, CameraPose> = {
+        front: { position: [0, 1.5, 4.2], target: [0, 0.55, 0], fov: 55 },
+        left: { position: [-3.5, 1.0, 1.2], target: [0, 0.55, 0], fov: 55 },
+        top: { position: [0, 4.6, 0.01], target: [0, 0, 0], fov: 56 },
+        right: { position: [3.8, 1.0, 1.25], target: [0, 0.55, 0], fov: 48 },
+        chair: { position: [0, 0.9, 2.4], target: [0, 0.55, 0], fov: 48 },
+        rightTop: { position: [3.7, 2.7, 2.9], target: [0.318, 0.332, -0.161], fov: 48 },
+        topWithChairs: { position: [0, 4.5, 0.01], target: [0, 0, 0], fov: 70 },
+    };
 
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true });
+    }
+
+    private get views(): Record<CameraViewPreset, CameraPose> {
+        return this.isMobile ? this.mobileViews : this.desktopViews;
+    }
+
+    setIsMobile(isMobile: boolean) {
+        if (this.isMobile === isMobile) return;
+        this.isMobile = isMobile;
+        this.setView(this.currentView);
     }
 
     setView(preset: CameraViewPreset) {

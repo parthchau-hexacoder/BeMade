@@ -105,6 +105,17 @@ const LoaderBridge = ({
 };
 
 export const Scene = ({ className, onLoadingChange, onInitialLoadComplete }: Props) => {
+  const { camera } = useDesign3D();
+
+  useEffect(() => {
+    const updateViewportProfile = () => {
+      camera.setIsMobile(window.innerWidth < 768);
+    };
+    updateViewportProfile();
+    window.addEventListener("resize", updateViewportProfile);
+    return () => window.removeEventListener("resize", updateViewportProfile);
+  }, [camera]);
+
   return (
     <Canvas
       gl={{
