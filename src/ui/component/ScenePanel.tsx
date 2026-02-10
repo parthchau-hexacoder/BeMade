@@ -3,6 +3,7 @@ import { useAppActions } from "../../app/hooks/useAppActions";
 import { Scene } from "../../Scene3d/Scene";
 import { CameraCarousel } from "./CameraCarousel";
 import { SceneActions } from "./SceneActions";
+import { SquareLoader } from "./loaders/SquareLoader";
 
 export const ScenePanel = observer(() => {
   const { ui, registerSceneContainer, onSceneInitialLoadComplete } = useAppActions();
@@ -19,11 +20,9 @@ export const ScenePanel = observer(() => {
         onLoadingChange={ui.setSceneLoading}
         onInitialLoadComplete={onSceneInitialLoadComplete}
       />
-      {ui.isSceneLoading && (
+      {ui.isSceneLoading && ui.hasSceneReady && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-lg border-2 border-gray-300 bg-white/90 shadow-sm">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
-          </div>
+          <SquareLoader />
         </div>
       )}
       <SceneActions />

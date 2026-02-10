@@ -9,6 +9,7 @@ import { ScenePanel } from "./ui/component/ScenePanel";
 import { MobileNav } from "./ui/component/MobileNav";
 import { useAppActions } from "./app/hooks/useAppActions";
 import { useAppLifecycle } from "./app/hooks/useAppLifecycle";
+import { FullScreenLoader } from "./ui/component/loaders/FullScreenLoader";
 
 const App = observer(() => {
   const { ui } = useAppActions();
@@ -46,11 +47,7 @@ const App = observer(() => {
         open={ui.isOrderModalOpen}
         onClose={ui.closeOrderModal}
       />
-      {ui.isSceneLoading && !ui.hasSceneReady && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white text-[15px] tracking-wide text-gray-700">
-          Loading 3D Configurator...
-        </div>
-      )}
+      {ui.isSceneLoading && !ui.hasSceneReady && <FullScreenLoader />}
     </div>
 
   )
