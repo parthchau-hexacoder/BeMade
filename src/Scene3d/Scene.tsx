@@ -29,6 +29,7 @@ const SceneContents = observer(() => {
     camera.currentView === "rightTop" ||
     camera.currentView === "topWithChairs";
   const showContactShadows = !showChairPreview;
+  camera.animateToView('front')
 
   return (
     <>
@@ -115,7 +116,7 @@ export const Scene = ({ className, onLoadingChange, onInitialLoadComplete }: Pro
       }}
       className={className}
       camera={{
-        position: [0, 1, 2],
+        position:[0, 1.1, 3.6],
         fov: 45
       }}
       shadows

@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 import { useDesign } from '../../app/providers/DesignProvider';
 import { useDesign3D } from '../../app/providers/Design3DProvider';
 
@@ -7,6 +8,7 @@ export const ChairControl = observer(() => {
     const { camera } = useDesign3D();
     const manager = chair;
     const position = chair.position;
+    const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
 
     const decrement = () => {
         const next = position.totalChairs - 2;
@@ -100,9 +102,15 @@ export const ChairControl = observer(() => {
             <div>
                 <div className="flex items-center justify-between mb-3">
                     <h3 className="text-base md:text-lg font-semibold">Select Chair Quantity</h3>
-                    <div className="w-6 h-6 rounded-full bg-gray-700 text-white flex items-center justify-center text-xs" title={table.top.getSeatCapacity()}>
+                    <button
+                        onClick={() => setIsSizeChartOpen(true)}
+                        className="w-6 h-6 rounded-full bg-gray-700 text-white flex items-center justify-center text-xs"
+                        title={table.top.getSeatCapacity()}
+                        type="button"
+                        aria-label="Open chair size chart"
+                    >
                         i
-                    </div>
+                    </button>
                 </div>
 
                 <div className="inline-flex items-center rounded-lg overflow-hidden border border-gray-300 mb-2">
@@ -135,6 +143,37 @@ export const ChairControl = observer(() => {
                     Chairs are placed symmetrically around the table.
                 </p>
             </div>
+
+            {isSizeChartOpen && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
+                    onClick={() => setIsSizeChartOpen(false)}
+                >
+                    <div
+                        className="relative w-full max-w-[92vw] overflow-hidden rounded-lg bg-white shadow-2xl sm:max-w-3xl"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between bg-black px-4 py-2.5">
+                            <h3 className="text-lg font-semibold text-white sm:text-xl">Chair Size Chart</h3>
+                            <button
+                                onClick={() => setIsSizeChartOpen(false)}
+                                className="text-2xl leading-none text-white"
+                                aria-label="Close size chart"
+                                type="button"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="h-[70vh] bg-gray-100">
+                            <iframe
+                                title="Chair size chart"
+                                src="/assets/images/chair_size_chart.pdf"
+                                className="h-full w-full"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 });

@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useMemo, useState } from 'react';
 import { FiArrowRight, FiX } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 import { useDesign } from '../../app/providers/DesignProvider';
 
 type Props = {
@@ -26,9 +27,9 @@ const formatLabel = (id: string) =>
     .join(' ');
 
 export const OrderSamplesModal = observer(({ open, onClose }: Props) => {
-  const { table } = useDesign();
+  const { table, samples, toggleSample } = useDesign();
+  const navigate = useNavigate();
   const materials = table.top.getAvailableMaterals();
-  const [selected, setSelected] = useState<string[]>([]);
   const [hoverPreview, setHoverPreview] = useState<HoverPreview | null>(null);
 
   const categories = useMemo<Category[]>(() => {
@@ -77,12 +78,6 @@ export const OrderSamplesModal = observer(({ open, onClose }: Props) => {
 
     return groups.filter((group) => group.items.length > 0);
   }, [materials]);
-
-  const toggleSelection = (id: string) => {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
 
   const handleTileEnter = (
     material: string,
@@ -192,11 +187,11 @@ export const OrderSamplesModal = observer(({ open, onClose }: Props) => {
               <h5 className="mb-2 text-xl font-semibold text-gray-900 sm:text-2xl">{group.label}</h5>
               <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-6">
                 {group.items.map((material) => {
-                  const isSelected = selected.includes(material);
+                  const isSelected = samples.includes(material);
                   return (
                     <button
                       key={material}
-                      onClick={() => toggleSelection(material)}
+                      onClick={() => toggleSample(material)}
                       onMouseEnter={(event) => handleTileEnter(material, event)}
                       onMouseLeave={() => setHoverPreview(null)}
                       className={`
@@ -220,11 +215,15 @@ export const OrderSamplesModal = observer(({ open, onClose }: Props) => {
 
         <div className="flex items-center justify-center border-t border-gray-300 px-3 py-2.5 sm:justify-end">
           <button
+            onClick={() => {
+              onClose();
+              navigate('/checkout?mode=samples');
+            }}
             className={`
               w-full rounded-full px-5 py-2 text-base transition sm:w-auto sm:py-1.5 sm:text-xl
-              ${selected.length > 0 ? 'bg-black text-white hover:bg-gray-800' : 'bg-gray-200 text-gray-400'}
+              ${samples.length > 0 ? 'bg-black text-white hover:bg-gray-800' : 'bg-gray-200 text-gray-400'}
             `}
-            disabled={selected.length === 0}
+            disabled={samples.length === 0}
           >
             <span className="inline-flex items-center gap-1">
               Buy Now

@@ -88,20 +88,29 @@ export const TopMaterialControls = observer(() => {
                             {group.items.map((material) => {
                                 const selected = manager.materialId === material;
                                 return(
-                                    <div 
+                                    <button 
                                     key={material}
                                     onClick={()=>{
                                         manager.setMaterial(material)
                                         camera.animateToView("top", 1.8)
                                     }}
-                                    className={`rounded-2xl p-2 cursor-pointer border ${selected ? 'border-gray-900' : 'border-transparent'} hover:border-gray-400`}>
+                                    className={`rounded-2xl p-2 cursor-pointer relative`}
+                                    type="button">
+                                        {selected && (
+                                            <div className="absolute top-2 right-2 z-10 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow md:top-3 md:right-3 md:w-7 md:h-7">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                                    <circle cx="12" cy="12" r="11" stroke="#111" strokeWidth="1" fill="#fff" />
+                                                    <path d="M7 13l3 3 7-8" stroke="#111" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </div>
+                                        )}
                                         <div className="mb-2 aspect-square rounded-2xl overflow-hidden bg-gray-100">
                                             <img 
                                                 className='h-full w-full object-cover'
                                                 src={`/assets/images/top-color/${material}/preview.webp`} alt={material} />
                                         </div>
                                         <p className="text-xs sm:text-sm font-medium text-gray-800">{formatLabel(material)}</p>
-                                    </div>
+                                    </button>
                                 )
                             })}
                         </div>

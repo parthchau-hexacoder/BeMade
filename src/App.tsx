@@ -100,7 +100,14 @@ const App = () => {
             </>
           }
         />
-        <Route path="/checkout" element={<CheckoutPage onBack={handleBackToDesign} />} />
+        <Route
+          path="/checkout"
+          element={
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              <CheckoutPage onBack={handleBackToDesign} />
+            </div>
+          }
+        />
       </Routes>
       <OrderSamplesModal
         open={isOrderModalOpen}

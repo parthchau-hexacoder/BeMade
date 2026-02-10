@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react-lite';
+import { useLocation } from 'react-router-dom';
 import { useDesign } from '../../app/providers/DesignProvider';
 const toTitle = (value: string) =>
     value
@@ -17,7 +18,15 @@ const SummaryRow = ({ label, value }: { label: string; value: string }) => (
 );
 
 export const CheckoutPage = observer(({ onBack }: { onBack: () => void }) => {
-    const { table, chair } = useDesign();
+    const { table, chair, samples, samplesPrice } = useDesign();
+    const location = useLocation();
+    const isSamplesOnlyCheckout = new URLSearchParams(location.search).get('mode') === 'samples';
+
+    const formatLabel = (id: string) =>
+        id
+            .split('_')
+            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(' ');
 
     const getTopShapeLabel = () => {
         return toTitle(table.top.id);
@@ -47,7 +56,9 @@ export const CheckoutPage = observer(({ onBack }: { onBack: () => void }) => {
         <div className="flex-1 w-full bg-white px-4 py-6 sm:px-6 md:px-12 md:py-10">
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-6 md:gap-10">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-6 md:mb-8">Checkout</h1>
+                    <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-6 md:mb-8">
+                        {isSamplesOnlyCheckout ? 'Sample Checkout' : 'Checkout'}
+                    </h1>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                         <div className="flex flex-col gap-2">
@@ -99,6 +110,36 @@ export const CheckoutPage = observer(({ onBack }: { onBack: () => void }) => {
                         </button>
                     </div>
 
+                    {isSamplesOnlyCheckout && (
+                        <div className="mt-10 rounded-2xl border border-gray-200 bg-white p-5 md:p-6">
+                            <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-3">Selected Samples</h2>
+                            <div className="flex flex-wrap gap-2">
+                                {samples.length > 0 ? (
+                                    samples.map((sample) => (
+                                        <span
+                                            key={sample}
+                                            className="rounded-full border border-gray-300 bg-gray-50 px-3 py-1 text-sm text-gray-700"
+                                        >
+                                            {formatLabel(sample)}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-gray-500">No samples selected.</p>
+                                )}
+                            </div>
+
+                            <div className="mt-5 flex items-center justify-between rounded-lg bg-gray-100 px-4 py-3">
+                                <div>
+                                    <p className="text-xs uppercase tracking-widest text-gray-500">Samples Total</p>
+                                    <p className="text-lg font-semibold text-gray-900">GBP {samplesPrice}</p>
+                                </div>
+                                <div className="text-sm text-gray-600">
+                                    Selected: <span className="font-semibold text-gray-900">{samples.length}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="mt-8 flex items-start gap-3 text-xs text-gray-500">
                         <div className="h-5 w-5 rounded bg-gray-200 flex items-center justify-center text-gray-600 text-xs font-bold">i</div>
                         <p>
@@ -116,16 +157,40 @@ export const CheckoutPage = observer(({ onBack }: { onBack: () => void }) => {
                         <h2 className="text-2xl font-bold text-gray-900 mb-1">BeMade{'\u2122'}</h2>
                         <p className="text-xs text-gray-400 tracking-widest uppercase mb-6">Your Design | Our Perfection</p>
 
-                        <h3 className="text-sm text-gray-500 font-medium uppercase tracking-widest mb-4">Your Build</h3>
+                        <h3 className="text-sm text-gray-500 font-medium uppercase tracking-widest mb-4">
+                            {isSamplesOnlyCheckout ? 'Your Samples' : 'Your Build'}
+                        </h3>
                         <div className="flex flex-col">
-                            <SummaryRow label="Table Top" value={getTopColorLabel()} />
-                            <SummaryRow label="Base" value={getBaseShapeLabel()} />
-                            <SummaryRow label="Base Colour" value={getBaseColorLabel()} />
-                            <SummaryRow label="Dimensions" value={`Length: ${table.top.length} mm \u00d7 Width: ${table.top.width} mm`} />
-                            <SummaryRow label="Table Top Shape" value={getTopShapeLabel()} />
-                            <SummaryRow label="Chair Type" value={getChairShapeLabel()} />
-                            <SummaryRow label="Chair Colour" value={getChairColorLabel()} />
-                            <SummaryRow label="Chair Quantity" value={chair.position.totalChairs.toString()} />
+                            {!isSamplesOnlyCheckout && (
+                                <SummaryRow label="Table Top" value={getTopColorLabel()} />
+                            )}
+                            {!isSamplesOnlyCheckout && (
+                                <SummaryRow label="Base" value={getBaseShapeLabel()} />
+                            )}
+                            {!isSamplesOnlyCheckout && (
+                                <SummaryRow label="Base Colour" value={getBaseColorLabel()} />
+                            )}
+                            {!isSamplesOnlyCheckout && (
+                                <SummaryRow label="Dimensions" value={`Length: ${table.top.length} mm \u00d7 Width: ${table.top.width} mm`} />
+                            )}
+                            {!isSamplesOnlyCheckout && (
+                                <SummaryRow label="Table Top Shape" value={getTopShapeLabel()} />
+                            )}
+                            {!isSamplesOnlyCheckout && (
+                                <SummaryRow label="Chair Type" value={getChairShapeLabel()} />
+                            )}
+                            {!isSamplesOnlyCheckout && (
+                                <SummaryRow label="Chair Colour" value={getChairColorLabel()} />
+                            )}
+                            {!isSamplesOnlyCheckout && (
+                                <SummaryRow label="Chair Quantity" value={chair.position.totalChairs.toString()} />
+                            )}
+                            {isSamplesOnlyCheckout && (
+                                <SummaryRow label="Samples Selected" value={samples.length.toString()} />
+                            )}
+                            {isSamplesOnlyCheckout && (
+                                <SummaryRow label="Samples Total" value={`GBP ${samplesPrice}`} />
+                            )}
                         </div>
                     </div>
                 </div>
