@@ -50,14 +50,20 @@ export const TableTop = observer(() => {
     const maxWidth = manager.getMaxWidth();
     const x = Math.min(1, manager.length / maxLength);
     const z = Math.min(1, manager.width / maxWidth);
+    if( table.top.id === 'round' || table.top.id === 'square') return [ x, x ] as [number, number];
     return [x, z] as [number, number];
   }, [manager.length, manager.width, manager.id]);
 
+  const findCenter = useMemo(() => {
+    if( table.top.id === 'round' || table.top.id === 'square') return [ -0.3, 0.3 ] as [number, number];
+    return [0, 0.3] as [number, number];
+  }, [manager.length, manager.width, manager.id]);
+
   useEffect(() => {
-    applyTextureCut(textures.map, textureRepeat);
-    applyTextureCut(textures.metalnessMap, textureRepeat);
-    applyTextureCut(textures.roughnessMap, textureRepeat);
-    applyTextureCut(textures.normalMap, textureRepeat);
+    applyTextureCut(textures.map, textureRepeat, findCenter);
+    applyTextureCut(textures.metalnessMap, textureRepeat, findCenter);
+    applyTextureCut(textures.roughnessMap, textureRepeat, findCenter);
+    applyTextureCut(textures.normalMap, textureRepeat, findCenter);
   }, [
     textureRepeat,
     textures.map,
