@@ -9,7 +9,7 @@ export const Table = observer(() => {
     <>
       <group name="Table">
         <TableTop />
-        {/* <TableMDF /> */}
+        <TableMDF />
         <TableBase />
       </group>
     </>
