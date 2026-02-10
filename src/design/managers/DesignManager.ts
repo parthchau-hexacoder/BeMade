@@ -7,6 +7,7 @@ export class DesignManager {
     table: TableManager;
     chair: ChairManager;
     samples: string[] = [];
+    checkoutPreviewImage: string | null = null;
 
     constructor() {
         this.table = new TableManager();
@@ -19,6 +20,7 @@ export class DesignManager {
         this.table.reset();
         this.chair.reset();
         this.samples = [];
+        this.checkoutPreviewImage = null;
     }
 
     toggleSample(id: string) {
@@ -31,6 +33,10 @@ export class DesignManager {
 
     clearSamples() {
         this.samples = [];
+    }
+
+    setCheckoutPreviewImage(image: string | null) {
+        this.checkoutPreviewImage = image;
     }
 
     get samplesPrice() {

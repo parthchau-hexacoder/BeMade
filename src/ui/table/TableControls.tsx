@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useAppActions } from '../../app/hooks/useAppActions';
 import { ChairControl } from '../chairs/ChairControl';
 import { OrderSummary } from '../component/OrderSummary';
 import { BaseControl } from './BaseControl';
@@ -6,11 +7,6 @@ import { BaseMaterialControl } from './BaseMaterialControl';
 import { TopMaterialControls } from './TopMaterialControl';
 import { TopShapeControl } from './TopShapeControl';
 import { TopSizeControl } from './TopSizeControl';
-
-type Props = {
-    onPlaceOrder: () => void;
-    onActiveSectionChange?: (id: string) => void;
-};
 
 const SECTION_IDS = [
     'base',
@@ -22,12 +18,13 @@ const SECTION_IDS = [
     'summary'
 ];
 
-const TableControls = ({ onPlaceOrder, onActiveSectionChange }: Props) => {
+const TableControls = () => {
+    const { ui } = useAppActions();
     const containerRef = useRef<HTMLDivElement | null>(null);
     const sectionElementsRef = useRef<HTMLElement[]>([]);
 
     useEffect(() => {
-        if (!containerRef.current || !onActiveSectionChange) return;
+        if (!containerRef.current) return;
 
         sectionElementsRef.current = SECTION_IDS
             .map((id) => document.getElementById(id))
@@ -41,7 +38,7 @@ const TableControls = ({ onPlaceOrder, onActiveSectionChange }: Props) => {
                     .filter((entry) => entry.isIntersecting)
                     .sort((a, b) => (a.boundingClientRect.top > b.boundingClientRect.top ? 1 : -1));
                 if (visible[0]?.target?.id) {
-                    onActiveSectionChange(visible[0].target.id);
+                    ui.setActiveNavId(visible[0].target.id);
                 }
             },
             {
@@ -52,7 +49,7 @@ const TableControls = ({ onPlaceOrder, onActiveSectionChange }: Props) => {
 
         sectionElementsRef.current.forEach((el) => observer.observe(el));
         return () => observer.disconnect();
-    }, [onActiveSectionChange]);
+    }, [ui]);
 
     return (
         <div ref={containerRef} className='w-full flex-1 min-h-0 overflow-y-auto scroll-smooth md:w-[35%] md:flex-none md:h-full'>
@@ -75,7 +72,7 @@ const TableControls = ({ onPlaceOrder, onActiveSectionChange }: Props) => {
                 <ChairControl />
             </section>
             <section id="summary">
-                <OrderSummary onPlaceOrder={onPlaceOrder} />
+                <OrderSummary />
             </section>
         </div>
     );

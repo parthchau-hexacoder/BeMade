@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react-lite';
+import { useAppActions } from '../../app/hooks/useAppActions';
 import { useLocation } from 'react-router-dom';
 import { useDesign } from '../../app/providers/DesignProvider';
 const toTitle = (value: string) =>
@@ -17,8 +18,9 @@ const SummaryRow = ({ label, value }: { label: string; value: string }) => (
     </div>
 );
 
-export const CheckoutPage = observer(({ onBack }: { onBack: () => void }) => {
-    const { table, chair, samples, samplesPrice } = useDesign();
+export const CheckoutPage = observer(() => {
+    const { table, chair, samples, samplesPrice, checkoutPreviewImage } = useDesign();
+    const { onBackToDesign } = useAppActions();
     const location = useLocation();
     const isSamplesOnlyCheckout = new URLSearchParams(location.search).get('mode') === 'samples';
 
@@ -97,7 +99,7 @@ export const CheckoutPage = observer(({ onBack }: { onBack: () => void }) => {
 
                     <div className="mt-8 flex flex-col items-stretch gap-3 sm:mt-10 sm:flex-row sm:items-center">
                         <button
-                            onClick={onBack}
+                            onClick={onBackToDesign}
                             className="h-11 px-6 rounded-full border border-gray-300 text-sm text-gray-700 hover:bg-gray-50 transition"
                         >
                             &#8249; Back to Design
@@ -153,7 +155,15 @@ export const CheckoutPage = observer(({ onBack }: { onBack: () => void }) => {
 
                 <div className="bg-gray-100 rounded-2xl p-6 md:p-8">
                     <div className="bg-white rounded-xl p-5 md:p-6 shadow-sm">
-                        <div className="h-40 w-full rounded-lg bg-gradient-to-br from-gray-200 to-gray-100 mb-6" />
+                        <div className="h-40 w-full rounded-lg bg-linear-to-br from-gray-200 to-gray-100 mb-6 overflow-hidden">
+                            {checkoutPreviewImage ? (
+                                <img
+                                    src={checkoutPreviewImage}
+                                    alt="Current configuration"
+                                    className="h-full w-full object-cover"
+                                />
+                            ) : null}
+                        </div>
                         <h2 className="text-2xl font-bold text-gray-900 mb-1">BeMade{'\u2122'}</h2>
                         <p className="text-xs text-gray-400 tracking-widest uppercase mb-6">Your Design | Our Perfection</p>
 

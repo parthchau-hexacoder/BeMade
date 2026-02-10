@@ -1,18 +1,11 @@
 import { FiDownload, FiMaximize, FiMinimize, FiShare2 } from "react-icons/fi";
+import { observer } from "mobx-react-lite";
+import { useAppActions } from "../../app/hooks/useAppActions";
 
-type Props = {
-  isFullscreen: boolean;
-  onSave: () => void;
-  onToggleFullscreen: () => void;
-  actionMessage: string | null;
-};
+export const SceneActions = observer(() => {
+  const { ui, onSave, onToggleFullscreen } = useAppActions();
+  const { isFullscreen, actionMessage } = ui;
 
-export const SceneActions = ({
-  isFullscreen,
-  onSave,
-  onToggleFullscreen,
-  actionMessage,
-}: Props) => {
   return (
     <div className="absolute right-4 top-4 z-20 flex flex-col items-end gap-2">
       <div className="flex items-center gap-2 rounded-lg bg-white/80 p-1 shadow-sm backdrop-blur">
@@ -51,4 +44,4 @@ export const SceneActions = ({
       )}
     </div>
   );
-};
+});

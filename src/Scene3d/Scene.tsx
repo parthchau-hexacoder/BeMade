@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { observer } from "mobx-react-lite";
 import { Table } from "./objects/table/Table";
 import { CameraRing } from "./managers/CameraRing";
@@ -69,6 +69,14 @@ const SceneContents = observer(() => {
   );
 });
 
+const ClearFrameBuffer = () => {
+  useFrame(({ gl }) => {
+    gl.clear(true, true, true);
+  }, -1);
+
+  return null;
+};
+
 const LoaderBridge = ({
   onLoadingChange,
   onInitialLoadComplete,
@@ -120,6 +128,7 @@ export const Scene = ({ className, onLoadingChange, onInitialLoadComplete }: Pro
     <Canvas
       gl={{
         antialias: true,
+        preserveDrawingBuffer: true,
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 1.02,
         outputColorSpace: THREE.SRGBColorSpace
@@ -137,6 +146,7 @@ export const Scene = ({ className, onLoadingChange, onInitialLoadComplete }: Pro
         }}
         onInitialLoadComplete={onInitialLoadComplete}
       />
+      <ClearFrameBuffer />
       <Suspense fallback={null}>
         <SceneContents />
       </Suspense>

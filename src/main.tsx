@@ -3,14 +3,17 @@ import './index.css'
 import App from './App.tsx'
 import { DesignProvider } from './app/providers/DesignProvider.tsx'
 import { Design3DProvider } from './app/providers/Design3DProvider.tsx'
+import { UIProvider } from './app/providers/UIProvider.tsx'
 import { BrowserRouter } from 'react-router-dom'
 
 createRoot(document.getElementById('root')!).render(
-    <DesignProvider>
-      <Design3DProvider>
-        <BrowserRouter>
+    <BrowserRouter>
+      <UIProvider>
+        <DesignProvider>
+          <Design3DProvider>
           <App />
-        </BrowserRouter>
-      </Design3DProvider>
-    </DesignProvider>
+          </Design3DProvider>
+        </DesignProvider>
+      </UIProvider>
+    </BrowserRouter>
 )

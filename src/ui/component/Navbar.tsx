@@ -1,4 +1,6 @@
 import React from "react";
+import { observer } from "mobx-react-lite";
+import { useAppActions } from "../../app/hooks/useAppActions";
 
 export type NavItem = {
   id: string;
@@ -15,13 +17,10 @@ export const NAV_ITEMS: NavItem[] = [
   { id: "summary", label: "SUMMARY" },
 ];
 
-type Props = {
-  activeId?: string;
-  onOrderSampleClick?: () => void;
-  onNavClick?: (id: string) => void;
-};
+export const Navbar: React.FC = observer(() => {
+  const { ui, onNavClick } = useAppActions();
+  const activeId = ui.activeNavId;
 
-export const Navbar: React.FC<Props> = ({ activeId = "base", onOrderSampleClick, onNavClick }) => {
   return (
     <header className="w-full border-b border-gray-200 bg-white">
       <div className="mx-auto flex flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between md:px-6 md:py-4">
@@ -30,7 +29,7 @@ export const Navbar: React.FC<Props> = ({ activeId = "base", onOrderSampleClick,
             <img className="h-8 md:h-10" src="/assets/images/header_logo.svg" alt="" />
           </div>
           <button
-            onClick={onOrderSampleClick}
+            onClick={ui.openOrderModal}
             className="inline-flex items-center rounded-full bg-black px-4 py-2 text-xs font-medium text-white transition hover:bg-gray-800 md:hidden"
           >
             Order Sample
@@ -44,7 +43,7 @@ export const Navbar: React.FC<Props> = ({ activeId = "base", onOrderSampleClick,
             return (
               <button
                 key={item.id}
-                onClick={() => onNavClick?.(item.id)}
+                onClick={() => onNavClick(item.id)}
                 className={`
                   relative pb-1 text-xs tracking-widest transition-colors cursor-pointer sm:text-sm md:text-md
                   ${
@@ -65,7 +64,7 @@ export const Navbar: React.FC<Props> = ({ activeId = "base", onOrderSampleClick,
         </nav>
 
         <button
-          onClick={onOrderSampleClick}
+          onClick={ui.openOrderModal}
           className="hidden rounded-full bg-black px-6 py-2 text-sm font-medium text-white transition hover:bg-gray-800 cursor-pointer md:inline-flex"
         >
           Order Sample
@@ -73,4 +72,4 @@ export const Navbar: React.FC<Props> = ({ activeId = "base", onOrderSampleClick,
       </div>
     </header>
   );
-};
+});

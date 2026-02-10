@@ -1,11 +1,11 @@
+import { observer } from "mobx-react-lite";
+import { useAppActions } from "../../app/hooks/useAppActions";
 import { NAV_ITEMS } from "./Navbar";
 
-type Props = {
-  activeId: string;
-  onNavClick: (id: string) => void;
-};
+export const MobileNav = observer(() => {
+  const { ui, onNavClick } = useAppActions();
+  const activeId = ui.activeNavId;
 
-export const MobileNav = ({ activeId, onNavClick }: Props) => {
   return (
     <div className="md:hidden">
       <nav className="flex items-center gap-6 overflow-x-auto whitespace-nowrap border-b border-gray-200 px-2 pb-2">
@@ -30,4 +30,4 @@ export const MobileNav = ({ activeId, onNavClick }: Props) => {
       </nav>
     </div>
   );
-};
+});
