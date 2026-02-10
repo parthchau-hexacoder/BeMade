@@ -1,0 +1,65 @@
+TableTop object - work is remaining
+
+src/
+├─ app/
+│  ├─ App.tsx
+│  ├─ providers/
+│  │  ├─ DesignProvider.tsx
+│  │  └─ SceneProvider.tsx
+│
+├─ design/                      # Pure business logic (NO 3D)
+│  ├─ managers/
+│  │  ├─ table/
+│  │  │  ├─ TableManager.ts
+│  │  │  ├─ TableTopManager.ts
+│  │  │  ├─ TableBaseManager.ts
+│  │  │  └─ TableMDFManager.ts
+│  │  ├─ chair/
+│  │  │  └─ ChairManager.ts
+│  │  └─ DesignRootManager.ts
+│  │
+│  ├─ catalog/
+│  │  ├─ materials.catalog.ts
+│  │  ├─ textures.catalog.ts
+│  │  ├─ table.catalog.ts
+│  │  └─ chair.catalog.ts
+│  │
+│  ├─ types/
+│  │  ├─ table.types.ts
+│  │  ├─ chair.types.ts
+│  │  └─ material.types.ts
+│
+├─ scene3d/                     # Everything related to R3F
+│  ├─ Scene.tsx
+│  ├─ managers/
+│  │  ├─ CameraManager.tsx
+│  │  ├─ LightManager.tsx
+│  │  └─ EnvironmentManager.tsx
+│  │
+│  ├─ objects/
+│  │  ├─ table/
+│  │  │  ├─ Table.tsx
+│  │  │  ├─ TableTop.tsx
+│  │  │  ├─ TableBase.tsx
+│  │  │  └─ TableMDF.tsx
+│  │  ├─ chair/
+│  │  │  └─ Chair.tsx
+│  │
+│  ├─ loaders/
+│  │  └─ useModelLoader.ts
+│  │
+│  └─ utils/
+│     ├─ applyTexture.ts
+│     └─ scaleMesh.ts
+│
+├─ ui/
+│  ├─ configurator/
+│  │  ├─ TableControls.tsx
+│  │  ├─ ChairControls.tsx
+│  │  └─ MaterialPicker.tsx
+│
+└─ utils/
+   └─ math.ts
+
+
+

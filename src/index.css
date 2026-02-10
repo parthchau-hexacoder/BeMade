@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+html, body{
+    height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
+}
+
+#root{
+    height: 100%;
+}
+
+canvas{
+    background-image: url('/assets/images/background/background.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover; 
+    width: 100vw;
+    height: 100vh;
+    display: block;
+}
+
+.preview-image{
+    object-fit: contain;
+}
