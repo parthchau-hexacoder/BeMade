@@ -5,6 +5,7 @@ import { setupTexture } from "../../utility/setupTexture";
 import { useEffect, useMemo } from "react";
 import { useDesign } from '../../../app/providers/DesignProvider';
 import { useDesign3D } from '../../../app/providers/Design3DProvider';
+import { gsap } from "gsap";
 
 export const Chairs = observer(() => {
 
@@ -91,6 +92,8 @@ export const Chairs = observer(() => {
             metalnessMap: topTextures.metalnessMap,
             roughnessMap: topTextures.roughnessMap,
             normalMap: topTextures.normalMap,
+            transparent: true,
+            opacity: 0,
         });
     }, [
         topTextures.map,
@@ -98,6 +101,19 @@ export const Chairs = observer(() => {
         topTextures.roughnessMap,
         topTextures.normalMap,
     ]);
+
+    useEffect(() => {
+        topMaterial.opacity = 0;
+        const tween = gsap.to(topMaterial, {
+            opacity: 1,
+            duration: 0.35,
+            ease: "power2.out",
+        });
+
+        return () => {
+            tween.kill();
+        };
+    }, [topMaterial]);
 
     useEffect(() => {
         return () => {

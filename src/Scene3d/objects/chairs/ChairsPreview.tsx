@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import { ContactShadows, useGLTF, useTexture } from "@react-three/drei";
 import { setupTexture } from "../../utility/setupTexture";
 import { useDesign } from "../../../app/providers/DesignProvider";
+import { gsap } from "gsap";
 
 export const ChairsPreview = observer(() => {
 
@@ -85,6 +86,8 @@ export const ChairsPreview = observer(() => {
       metalnessMap: topTextures.metalnessMap,
       roughnessMap: topTextures.roughnessMap,
       normalMap: topTextures.normalMap,
+      transparent: true,
+      opacity: 0,
     });
   }, [
     topTextures.map,
@@ -92,6 +95,19 @@ export const ChairsPreview = observer(() => {
     topTextures.roughnessMap,
     topTextures.normalMap,
   ]);
+
+  useEffect(() => {
+    topMaterial.opacity = 0;
+    const tween = gsap.to(topMaterial, {
+      opacity: 1,
+      duration: 0.35,
+      ease: "power2.out",
+    });
+
+    return () => {
+      tween.kill();
+    };
+  }, [topMaterial]);
 
   useEffect(() => {
     return () => {

@@ -5,6 +5,7 @@ import { useEffect, useMemo } from 'react';
 import { applyTextureCut } from '../../utility/applyTextureCut';
 import { setupTexture } from '../../utility/setupTexture';
 import { useDesign } from '../../../app/providers/DesignProvider';
+import { gsap } from 'gsap';
 
 export const TableTop = observer(() => {
 
@@ -84,6 +85,8 @@ export const TableTop = observer(() => {
       metalness: 0.0,
       roughness: 0.6,
       envMapIntensity: 0.7,
+      transparent: true,
+      opacity: 0,
     });
   }, [
     textures.map,
@@ -91,6 +94,19 @@ export const TableTop = observer(() => {
     textures.roughnessMap,
     textures.normalMap,
   ]);
+
+  useEffect(() => {
+    material.opacity = 0;
+    const tween = gsap.to(material, {
+      opacity: 1,
+      duration: 0.7,
+      ease: 'none',
+    });
+
+    return () => {
+      tween.kill();
+    };
+  }, [material]);
 
   /**
    * Dispose material on change
