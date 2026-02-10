@@ -148,7 +148,6 @@ const ChairItem = ({
             if ((child as THREE.Mesh).isMesh) {
                 const mesh = child as THREE.Mesh;
                 mesh.castShadow = true;
-                // mesh.receiveShadow = true;
                 mesh.material = mesh.name === "Leg" ? legMaterial : topMaterial;
             }
         });

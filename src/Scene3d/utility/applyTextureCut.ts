@@ -11,11 +11,15 @@ export const applyTextureCut = (
     return;
   }
 
+  let needsUpdate = false;
+
   if (texture.wrapS !== THREE.ClampToEdgeWrapping) {
     texture.wrapS = THREE.ClampToEdgeWrapping;
+    needsUpdate = true;
   }
   if (texture.wrapT !== THREE.ClampToEdgeWrapping) {
     texture.wrapT = THREE.ClampToEdgeWrapping;
+    needsUpdate = true;
   }
 
   texture.repeat.set(repeatX, repeatY);
@@ -24,5 +28,8 @@ export const applyTextureCut = (
     ...texture.userData,
     cutRepeat: [repeatX, repeatY],
   };
-  texture.needsUpdate = true;
+
+  if (needsUpdate) {
+    texture.needsUpdate = true;
+  }
 };
