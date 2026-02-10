@@ -1,4 +1,4 @@
-import { RefObject } from "react";
+import type { RefObject } from "react";
 import { Scene } from "../../Scene3d/Scene";
 import { CameraCarousel } from "./CameraCarousel";
 import { SceneActions } from "./SceneActions";
