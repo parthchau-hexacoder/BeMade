@@ -3,10 +3,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDesign } from "../providers/DesignProvider";
 import { useUI } from "../providers/UIProvider";
 import { DESIGN_STORAGE_KEY } from "../constants/storage";
+import { useDesign3D } from "../providers/Design3DProvider";
 
 export const useAppActions = () => {
   const ui = useUI();
   const design = useDesign();
+  const { camera } = useDesign3D();
   const navigate = useNavigate();
   const location = useLocation();
   const isDesignRoute = location.pathname === "/";
@@ -34,7 +36,21 @@ export const useAppActions = () => {
     [isDesignRoute, navigate, ui]
   );
 
+  const waitForNextPaint = useCallback(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve());
+        });
+      }),
+    []
+  );
+
   const onPlaceOrder = useCallback(async () => {
+    if (camera.currentView !== "rightTop") {
+      await camera.animateToView("rightTop", 1.1);
+      await waitForNextPaint();
+    }
 
     const canvas = ui.sceneContainer?.querySelector("canvas");
 
@@ -49,7 +65,7 @@ export const useAppActions = () => {
     }
 
     navigate("/checkout");
-  }, [design, navigate, ui]);
+  }, [camera, design, navigate, ui, waitForNextPaint]);
 
   const onBackToDesign = useCallback(() => {
     navigate("/");

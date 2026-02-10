@@ -2,8 +2,6 @@
 import { observer } from 'mobx-react-lite';
 import { useAppActions } from '../../app/hooks/useAppActions';
 import { useDesign } from '../../app/providers/DesignProvider';
-import { useDesign3D } from '../../app/providers/Design3DProvider';
-import { wait } from '../../Scene3d/utility/wait';
 const toTitle = (value: string) =>
     value
         .replace(/[_-]+/g, ' ')
@@ -23,7 +21,6 @@ const SummaryRow = ({ label, value }: { label: string; value: string }) => (
 export const OrderSummary = observer(() => {
     const { table, chair } = useDesign();
     const { onPlaceOrder } = useAppActions();
-    const { camera } = useDesign3D();
 
     const getTopShapeLabel = () => {
         return toTitle(table.top.id);
@@ -93,13 +90,7 @@ export const OrderSummary = observer(() => {
             </div>
 
             <button
-                onClick={async ()=>{
-                    if(camera.currentView !== 'rightTop'){
-                        await wait()
-                        camera.animateToView('rightTop');
-                    }
-                    onPlaceOrder();
-                }}
+                onClick={onPlaceOrder}
                 className="w-full bg-black text-white py-3 px-4 rounded-full font-bold text-sm tracking-wide hover:bg-gray-800 transition"
             >
                 PLACE ORDER

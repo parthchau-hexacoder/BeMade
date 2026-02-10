@@ -71,7 +71,7 @@ export class CameraManager {
         this.fov = pose.fov ?? 45;
     }
 
-    animateToView(preset: CameraViewPreset, duration = 1.5) {
+    animateToView(preset: CameraViewPreset, duration = 1.5): Promise<void> {
         const pose = this.views[preset];
         this.currentView = preset;
 
@@ -79,30 +79,39 @@ export class CameraManager {
         const target = { x: this.target[0], y: this.target[1], z: this.target[2] };
         const fov = { value: this.fov };
 
-        gsap.to(pos, {
-            x: pose.position[0],
-            y: pose.position[1],
-            z: pose.position[2],
-            duration,
-            ease: "power2.out",
-            onUpdate: () => this.setPosition(pos.x, pos.y, pos.z),
-        });
-
-        gsap.to(target, {
-            x: pose.target[0],
-            y: pose.target[1],
-            z: pose.target[2],
-            duration,
-            ease: "power2.out",
-            onUpdate: () => this.setTarget(target.x, target.y, target.z),
-        });
-
-        gsap.to(fov, {
-            value: pose.fov ?? 45,
-            duration,
-            ease: "power2.out",
-            onUpdate: () => this.setFov(fov.value),
-        });
+        return Promise.all([
+            new Promise<void>((resolve) => {
+                gsap.to(pos, {
+                    x: pose.position[0],
+                    y: pose.position[1],
+                    z: pose.position[2],
+                    duration,
+                    ease: "power2.out",
+                    onUpdate: () => this.setPosition(pos.x, pos.y, pos.z),
+                    onComplete: () => resolve(),
+                });
+            }),
+            new Promise<void>((resolve) => {
+                gsap.to(target, {
+                    x: pose.target[0],
+                    y: pose.target[1],
+                    z: pose.target[2],
+                    duration,
+                    ease: "power2.out",
+                    onUpdate: () => this.setTarget(target.x, target.y, target.z),
+                    onComplete: () => resolve(),
+                });
+            }),
+            new Promise<void>((resolve) => {
+                gsap.to(fov, {
+                    value: pose.fov ?? 45,
+                    duration,
+                    ease: "power2.out",
+                    onUpdate: () => this.setFov(fov.value),
+                    onComplete: () => resolve(),
+                });
+            }),
+        ]).then(() => undefined);
     }
 
     getViewPose(preset: CameraViewPreset): CameraPose {
