@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Scene } from "./Scene3d/Scene"
 import { NAV_ITEMS, Navbar } from "./ui/component/Navbar";
@@ -50,7 +50,7 @@ const App = () => {
           element={
             <>
               <div className="flex flex-1 w-full flex-col gap-2 overflow-hidden bg-white p-2 relative md:flex-row md:gap-4 md:p-4">
-                <div className="h-[42vh] min-h-[260px] w-full overflow-hidden rounded-xl relative flex items-center justify-center md:h-full md:w-[70%] md:rounded-2xl">
+                <div className="h-[42vh] min-h-65 w-full overflow-hidden rounded-xl relative flex items-center justify-center md:h-full md:w-[70%] md:rounded-2xl">
                   <Scene
                     className="w-full h-full"
                     onLoadingChange={setSceneLoading}
