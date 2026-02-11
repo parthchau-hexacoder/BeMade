@@ -32,8 +32,13 @@ const SceneContents = observer(() => {
 
   return (
     <>
-      {!showChairPreview && <Table />}
-      {showChairPreview ? <ChairsPreview /> : <Chairs />}
+      <group visible={!showChairPreview}>
+        <Table />
+        <Chairs />
+      </group>
+      <group visible={showChairPreview}>
+        <ChairsPreview />
+      </group>
       {showContactShadows && (
         <>
         <ContactShadows
