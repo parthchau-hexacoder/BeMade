@@ -12,7 +12,7 @@ export const ScenePanel = observer(() => {
   return (
     <div
       ref={registerSceneContainer}
-      className={`h-[42vh] min-h-65 w-full overflow-hidden relative flex items-center justify-center md:h-full md:w-[70%] ${
+      className={`scene-panel-layout h-[42vh] min-h-65 w-full overflow-hidden relative flex items-center justify-center md:h-full md:w-[65%] ${
         ui.isFullscreen ? "rounded-none" : "rounded-xl md:rounded-2xl"
       }`}
     >

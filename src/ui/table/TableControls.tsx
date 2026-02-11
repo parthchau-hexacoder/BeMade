@@ -52,7 +52,7 @@ const TableControls = () => {
     }, [ui]);
 
     return (
-        <div ref={containerRef} className='w-full flex-1 min-h-0 overflow-y-auto scroll-smooth md:w-[35%] md:flex-none md:h-full'>
+        <div ref={containerRef} className='table-controls-layout w-full flex-1 min-h-0 overflow-y-auto scroll-smooth md:w-[35%] md:flex-none md:h-full'>
             <section id="base">
                 <BaseControl />
             </section>
