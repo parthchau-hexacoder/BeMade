@@ -3,6 +3,7 @@ import { useAppActions } from "../../app/hooks/useAppActions";
 import { Scene } from "../../Scene3d/Scene";
 import { CameraCarousel } from "./CameraCarousel";
 import { SceneActions } from "./SceneActions";
+import { TopMaterialInfo } from "./TopMaterialInfo";
 import { SquareLoader } from "./loaders/SquareLoader";
 
 export const ScenePanel = observer(() => {
@@ -26,6 +27,7 @@ export const ScenePanel = observer(() => {
         </div>
       )}
       <SceneActions />
+      <TopMaterialInfo />
       <div className="absolute bottom-4 left-0 right-0 flex justify-center md:bottom-6">
         <CameraCarousel />
       </div>
