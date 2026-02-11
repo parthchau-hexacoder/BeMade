@@ -77,7 +77,7 @@ export const TableBase = observer(() => {
       opacity: 1,
       depthWrite: true,
       depthTest: true,
-      side: manager.id === 'linea'
+      side: manager.id === 'linea' || manager.id === 'linea-contour'
         ? THREE.DoubleSide
         : THREE.FrontSide,
     });
