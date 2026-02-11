@@ -57,14 +57,14 @@ export const CameraCarousel = observer(({ className }: Props) => {
     <div
       className={`pointer-events-auto select-none ${className ?? ""}`}
     >
-      <div className="flex items-center justify-center gap-3 rounded-full bg-white/80 px-3 py-1.5 shadow-md md:gap-4 md:px-4 md:py-2">
+      <div className="flex items-center justify-center gap-3 rounded-full px-3 py-1.5md:gap-4 md:px-4 md:py-2">
         <button
           type="button"
           aria-label="Previous view"
-          className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-white text-xl text-gray-700 hover:bg-gray-50 md:h-8 md:w-8"
+          className="flex h-7 w-7 items-center justify-center rounded-fulltext-xl text-zinc-900 md:h-8 md:w-8"
           onClick={() => goTo(index - 1)}
         >
-          <FiChevronLeft size={18} />
+          <FiChevronLeft size={24} />
         </button>
 
         <div className="flex items-center gap-2">
@@ -74,7 +74,7 @@ export const CameraCarousel = observer(({ className }: Props) => {
               type="button"
               aria-label={`View ${preset}`}
               className={`h-2.5 w-2.5 rounded-full transition ${
-                i === index ? "bg-gray-700" : "bg-gray-300"
+                i === index ? "bg-gray-700" : "bg-gray-400"
               }`}
               onClick={() => goTo(i)}
             />
@@ -84,10 +84,10 @@ export const CameraCarousel = observer(({ className }: Props) => {
         <button
           type="button"
           aria-label="Next view"
-          className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-white text-xl text-gray-700 hover:bg-gray-50 md:h-8 md:w-8"
+          className="flex h-7 w-7 items-center justify-center rounded-full  text-xl text-zinc-900 md:h-8 md:w-8"
           onClick={() => goTo(index + 1)}
         >
-          <FiChevronRight size={18} />
+          <FiChevronRight size={24} />
         </button>
       </div>
     </div>

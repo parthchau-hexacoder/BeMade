@@ -8,7 +8,7 @@ export const SceneActions = observer(() => {
 
   return (
     <div className="absolute right-4 top-4 z-20 flex flex-col items-end gap-2">
-      <div className="flex items-center gap-2 rounded-lg bg-white/80 p-1 shadow-sm backdrop-blur">
+      <div className="flex items-center gap-2 rounded-lg p-1 backdrop-blur">
         <button
           type="button"
           onClick={onSave}
