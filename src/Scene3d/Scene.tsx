@@ -35,6 +35,7 @@ const SceneContents = observer(() => {
       {!showChairPreview && <Table />}
       {showChairPreview ? <ChairsPreview /> : <Chairs />}
       {showContactShadows && (
+        <>
         <ContactShadows
           key={shadowKey}
           position={[0, 0, 0]}
@@ -44,6 +45,16 @@ const SceneContents = observer(() => {
           opacity={0.7}
           frames={1}
         />
+
+        <ContactShadows
+            position={[0, 0, 0]}
+            scale={6}
+            blur={0.8}
+            far={0.5}
+            opacity={0.45}
+            frames={1}
+          />
+        </>
       )}
 
       {!showChairsAny && (
