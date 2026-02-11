@@ -10,6 +10,7 @@ import { MobileNav } from "./ui/component/MobileNav";
 import { useAppActions } from "./app/hooks/useAppActions";
 import { useAppLifecycle } from "./app/hooks/useAppLifecycle";
 import { FullScreenLoader } from "./ui/component/loaders/FullScreenLoader";
+import { LoginPage } from "./ui/component/LoginPage";
 
 const App = observer(() => {
   const { ui } = useAppActions();
@@ -42,6 +43,7 @@ const App = observer(() => {
             </div>
           }
         />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
       <OrderSamplesModal
         open={ui.isOrderModalOpen}

@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAppActions } from "../../app/hooks/useAppActions";
 
 export type NavItem = {
@@ -23,15 +23,30 @@ export const Navbar: React.FC = observer(() => {
   const location = useLocation();
   const activeId = ui.activeNavId;
   const isCheckoutRoute = location.pathname === "/checkout";
+  const isLoginRoute = location.pathname === "/login";
+
+  if (isLoginRoute) {
+    return (
+      <header className="w-full border-b border-gray-300 shadow-sm">
+        <div className="mx-auto flex h-[92px] items-center px-4 md:px-7">
+          <Link to="/" aria-label="Go to home">
+            <img className="h-9 md:h-12" src="/assets/images/header_logo.svg" alt="BeMade" />
+          </Link>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="w-full border-b border-gray-300 shadow-xl shadow-zinc-900">
       <div className="mx-auto flex h-[84px] items-center justify-between px-4 md:grid md:grid-cols-[1fr_auto_1fr] md:px-7">
-        <img
-          className="h-9 md:h-12 md:justify-self-start"
-          src="/assets/images/header_logo.svg"
-          alt="BeMade"
-        />
+        <Link to="/" aria-label="Go to home" className="md:justify-self-start">
+          <img
+            className="h-9 md:h-12"
+            src="/assets/images/header_logo.svg"
+            alt="BeMade"
+          />
+        </Link>
 
         {!isCheckoutRoute && (
           <nav className="hidden items-center justify-self-center gap-8 md:flex lg:gap-10">
@@ -60,12 +75,12 @@ export const Navbar: React.FC = observer(() => {
 
         {!isCheckoutRoute && (
           <div className="hidden items-center justify-self-end gap-5 md:flex lg:gap-6">
-            <button
-              type="button"
+            <Link
+              to="/login"
               className="text-[14px] font-medium text-black transition hover:text-gray-700 lg:text-[15px]"
             >
               Login / Register
-            </button>
+            </Link>
             <button
               onClick={ui.openOrderModal}
               className="rounded-full bg-black px-6 py-2.5 text-[14px] font-medium text-white transition hover:bg-gray-800 lg:text-[15px]"
