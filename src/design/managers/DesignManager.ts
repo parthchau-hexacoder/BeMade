@@ -1,11 +1,15 @@
 import { makeAutoObservable } from "mobx";
 import { ChairManager } from "./chairs/ChairManager";
 import { TableManager } from "./tables/TableManager";
-import { DESIGN_STORAGE_KEY } from "../../app/constants/storage";
+import {
+    DESIGN_SHARE_QUERY_KEY,
+    DESIGN_STORAGE_KEY,
+} from "../../app/constants/storage";
+import { decodeDesignPayload } from "../../app/utils/designShare";
 import type { BaseShape, TopShapeId } from "./types/table.types";
 import type { chairShape } from "./chairs/ChairManager";
 
-type PersistedDesignPayload = {
+export type PersistedDesignPayload = {
     table?: {
         top?: {
             id?: TopShapeId;
@@ -24,6 +28,7 @@ type PersistedDesignPayload = {
         totalChairs?: number;
     };
     samples?: string[];
+    savedAt?: string;
 };
 
 const BASE_SHAPES: BaseShape[] = [
@@ -50,6 +55,7 @@ export class DesignManager {
 
         makeAutoObservable(this, {}, { autoBind: true });
         this.hydrateFromLocalStorage();
+        this.hydrateFromSharedLink();
     }
 
     reset() {
@@ -100,6 +106,23 @@ export class DesignManager {
             this.applyPersistedPayload(payload);
         } catch {
             // Ignore malformed data and keep current defaults.
+        }
+    }
+
+    private hydrateFromSharedLink() {
+        if (typeof window === "undefined") return;
+
+        const token = new URLSearchParams(window.location.search).get(DESIGN_SHARE_QUERY_KEY);
+        if (!token) return;
+
+        const payload = decodeDesignPayload(token);
+        if (!payload) return;
+
+        this.applyPersistedPayload(payload);
+        try {
+            window.localStorage.setItem(DESIGN_STORAGE_KEY, JSON.stringify(payload));
+        } catch {
+            // Ignore write errors and keep in-memory state.
         }
     }
 

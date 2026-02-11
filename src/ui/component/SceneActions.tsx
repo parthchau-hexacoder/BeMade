@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useAppActions } from "../../app/hooks/useAppActions";
 
 export const SceneActions = observer(() => {
-  const { ui, onSave, onToggleFullscreen } = useAppActions();
+  const { ui, onSave, onShare, onToggleFullscreen } = useAppActions();
   const { isFullscreen, actionMessage } = ui;
 
   return (
@@ -20,10 +20,10 @@ export const SceneActions = observer(() => {
         </button>
         <button
           type="button"
+          onClick={onShare}
           aria-label="Share"
           title="Share"
-          disabled
-          className="flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-400 shadow-sm opacity-60 cursor-not-allowed"
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-700 shadow-sm transition hover:bg-gray-50"
         >
           <FiShare2 size={18} />
         </button>
