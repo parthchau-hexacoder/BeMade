@@ -26,51 +26,52 @@ export const Navbar: React.FC = observer(() => {
 
   return (
     <header className="w-full border-b border-gray-300 shadow-xl shadow-zinc-900">
-      <div className="mx-auto flex h-[84px] items-center justify-between px-4 md:px-7">
+      <div className="mx-auto flex h-[84px] items-center justify-between px-4 md:grid md:grid-cols-[1fr_auto_1fr] md:px-7">
         <img
-          className="h-9 md:h-12"
+          className="h-9 md:h-12 md:justify-self-start"
           src="/assets/images/header_logo.svg"
           alt="BeMade"
         />
 
         {!isCheckoutRoute && (
-          <div className="hidden items-center gap-8 md:flex lg:gap-10">
-            <nav className="flex items-center gap-8 lg:gap-10">
-              {NAV_ITEMS.map((item) => {
-                const isActive = item.id === activeId;
+          <nav className="hidden items-center justify-self-center gap-8 md:flex lg:gap-10">
+            {NAV_ITEMS.map((item) => {
+              const isActive = item.id === activeId;
 
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => onNavClick(item.id)}
-                    className={`relative pb-1 text-[14px] tracking-[0.04em] transition-colors cursor-pointer lg:text-[15px] ${
-                      isActive
-                        ? "font-semibold text-[#3e4f62]"
-                        : "font-normal text-[#444c58] hover:text-black"
-                    }`}
-                  >
-                    {item.label}
-                    {isActive && (
-                      <span className="absolute -bottom-[7px] left-0 h-[2px] w-full bg-[#3e4f62]" />
-                    )}
-                  </button>
-                );
-              })}
-            </nav>
-            <div className="flex items-center gap-5 lg:gap-6">
-              <button
-                type="button"
-                className="text-[14px] font-medium text-black transition hover:text-gray-700 lg:text-[15px]"
-              >
-                Login / Register
-              </button>
-              <button
-                onClick={ui.openOrderModal}
-                className="rounded-full bg-black px-6 py-2.5 text-[14px] font-medium text-white transition hover:bg-gray-800 lg:text-[15px]"
-              >
-                Order Sample
-              </button>
-            </div>
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onNavClick(item.id)}
+                  className={`relative cursor-pointer pb-1 text-[14px] tracking-[0.04em] transition-colors lg:text-[15px] ${
+                    isActive
+                      ? "font-semibold text-[#3e4f62]"
+                      : "font-normal text-[#444c58] hover:text-black"
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <span className="absolute -bottom-[7px] left-0 h-[2px] w-full bg-[#3e4f62]" />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        )}
+
+        {!isCheckoutRoute && (
+          <div className="hidden items-center justify-self-end gap-5 md:flex lg:gap-6">
+            <button
+              type="button"
+              className="text-[14px] font-medium text-black transition hover:text-gray-700 lg:text-[15px]"
+            >
+              Login / Register
+            </button>
+            <button
+              onClick={ui.openOrderModal}
+              className="rounded-full bg-black px-6 py-2.5 text-[14px] font-medium text-white transition hover:bg-gray-800 lg:text-[15px]"
+            >
+              Order Sample
+            </button>
           </div>
         )}
 
