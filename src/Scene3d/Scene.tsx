@@ -47,6 +47,7 @@ const SceneContents = observer(() => {
         />
 
         <ContactShadows
+            key={`${shadowKey}-base`}
             position={[0, 0, 0]}
             scale={6}
             blur={0.8}
