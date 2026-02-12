@@ -22,8 +22,8 @@ export const ScenePanel = observer(() => {
         onInitialLoadComplete={onSceneInitialLoadComplete}
       />
       {ui.isSceneLoading && ui.hasSceneReady && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <SquareLoader />
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-white/28 backdrop-blur-[1px]">
+          <SquareLoader className="h-16 w-16 shadow-md" spinnerClassName="h-7 w-7" />
         </div>
       )}
       <SceneActions />

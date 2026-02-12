@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { Table } from "./objects/table/Table";
 import { CameraRing } from "./managers/CameraRing";
 import { LightRing } from "./managers/LightRing";
-import { ContactShadows, Environment } from "@react-three/drei";
+import { ContactShadows, Environment, useProgress } from "@react-three/drei";
 import { EffectComposer, SSAO } from "@react-three/postprocessing";
 import { Chairs } from "./objects/chairs/Chair";
 import { ChairsPreview } from "./objects/chairs/ChairsPreview";
@@ -18,6 +18,7 @@ type Props = {
   onLoadingChange?: (isLoading: boolean) => void;
   onInitialLoadComplete?: () => void;
 };
+const MIN_TRANSITION_LOADER_MS = 220;
 
 const SceneContents = observer(() => {
   const { table, chair } = useDesign();
@@ -157,20 +158,23 @@ const LoaderBridge = ({
   onInitialLoadComplete?: () => void;
 }) => {
   const scene = useThree((state) => state.scene);
+  const { active: isAssetLoading } = useProgress();
   const [hasCompletedOnce, setHasCompletedOnce] = useState(false);
   const [isVisualReadyForCycle, setIsVisualReadyForCycle] = useState(false);
   const currentCycleKeyRef = useRef(cycleKey);
   const visualReadyFramesRef = useRef(0);
+  const cycleStartedAtRef = useRef(performance.now());
 
   useEffect(() => {
     if (currentCycleKeyRef.current !== cycleKey) {
       currentCycleKeyRef.current = cycleKey;
       visualReadyFramesRef.current = 0;
+      cycleStartedAtRef.current = performance.now();
       setIsVisualReadyForCycle(false);
     }
   }, [cycleKey]);
 
-  const isLoading = !isVisualReadyForCycle;
+  const isLoading = isAssetLoading || !isVisualReadyForCycle;
 
   useFrame(() => {
     if (isVisualReadyForCycle) {
@@ -178,7 +182,17 @@ const LoaderBridge = ({
       return;
     }
 
-    if (hasSceneTexturesReady(scene)) {
+    if (isAssetLoading) {
+      visualReadyFramesRef.current = 0;
+      return;
+    }
+
+    const elapsed = performance.now() - cycleStartedAtRef.current;
+    const minDurationReached = elapsed >= MIN_TRANSITION_LOADER_MS;
+    const texturesReady = hasSceneTexturesReady(scene);
+    const canFinishCycle = texturesReady && minDurationReached;
+
+    if (canFinishCycle) {
       visualReadyFramesRef.current += 1;
       if (visualReadyFramesRef.current >= 2) {
         setIsVisualReadyForCycle(true);
@@ -206,7 +220,8 @@ const LoaderBridge = ({
 export const Scene = observer(({ className, onLoadingChange, onInitialLoadComplete }: Props) => {
   const { table, chair } = useDesign();
   const { camera } = useDesign3D();
-  const loadingCycleKey = `${table.top.id}|${table.top.materialId}|${table.base.id}|${table.base.materialId}|${chair.id}|${chair.materialId}`;
+  const cradleModelVariant = table.base.id === "cradle" && table.top.length <= 2400 ? "small" : "regular";
+  const loadingCycleKey = `${table.top.id}|${table.top.materialId}|${table.base.id}|${table.base.materialId}|${chair.id}|${chair.materialId}|${cradleModelVariant}`;
 
   useEffect(() => {
     const updateViewportProfile = () => {
