@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { Table } from "./objects/table/Table";
 import { CameraRing } from "./managers/CameraRing";
 import { LightRing } from "./managers/LightRing";
-import { ContactShadows, Environment, useProgress } from "@react-three/drei";
+import { ContactShadows, Environment } from "@react-three/drei";
 import { EffectComposer, SSAO } from "@react-three/postprocessing";
 import { Chairs } from "./objects/chairs/Chair";
 import { ChairsPreview } from "./objects/chairs/ChairsPreview";
@@ -148,42 +148,32 @@ const hasSceneTexturesReady = (root: THREE.Object3D) => {
 };
 
 const LoaderBridge = ({
+  cycleKey,
   onLoadingChange,
   onInitialLoadComplete,
 }: {
+  cycleKey: string;
   onLoadingChange?: (isLoading: boolean) => void;
   onInitialLoadComplete?: () => void;
 }) => {
-  const { active, loaded, total, progress } = useProgress();
   const scene = useThree((state) => state.scene);
-  const [hasStarted, setHasStarted] = useState(false);
   const [hasCompletedOnce, setHasCompletedOnce] = useState(false);
   const [isVisualReadyForCycle, setIsVisualReadyForCycle] = useState(false);
-  const prevLoaderBusyRef = useRef(false);
+  const currentCycleKeyRef = useRef(cycleKey);
   const visualReadyFramesRef = useRef(0);
 
   useEffect(() => {
-    if (!hasStarted && (active || total > 0 || progress > 0)) {
-      setHasStarted(true);
-    }
-  }, [active, total, progress, hasStarted]);
-
-  const isLoaderBusy = !hasStarted
-    ? true
-    : active || (total > 0 && loaded < total) || (progress > 0 && progress < 100);
-  const isLoading = isLoaderBusy || !isVisualReadyForCycle;
-
-  useEffect(() => {
-    // Start a fresh "visual ready" cycle whenever loader becomes busy again
-    if (!prevLoaderBusyRef.current && isLoaderBusy) {
-      setIsVisualReadyForCycle(false);
+    if (currentCycleKeyRef.current !== cycleKey) {
+      currentCycleKeyRef.current = cycleKey;
       visualReadyFramesRef.current = 0;
+      setIsVisualReadyForCycle(false);
     }
-    prevLoaderBusyRef.current = isLoaderBusy;
-  }, [isLoaderBusy]);
+  }, [cycleKey]);
+
+  const isLoading = !isVisualReadyForCycle;
 
   useFrame(() => {
-    if (isVisualReadyForCycle || isLoaderBusy || !hasStarted) {
+    if (isVisualReadyForCycle) {
       visualReadyFramesRef.current = 0;
       return;
     }
@@ -204,17 +194,19 @@ const LoaderBridge = ({
   }, [isLoading, onLoadingChange]);
 
   useEffect(() => {
-    if (hasStarted && !isLoading && !hasCompletedOnce) {
+    if (!isLoading && !hasCompletedOnce) {
       setHasCompletedOnce(true);
       if (onInitialLoadComplete) onInitialLoadComplete();
     }
-  }, [hasStarted, isLoading, hasCompletedOnce, onInitialLoadComplete]);
+  }, [isLoading, hasCompletedOnce, onInitialLoadComplete]);
 
   return null;
 };
 
-export const Scene = ({ className, onLoadingChange, onInitialLoadComplete }: Props) => {
+export const Scene = observer(({ className, onLoadingChange, onInitialLoadComplete }: Props) => {
+  const { table, chair } = useDesign();
   const { camera } = useDesign3D();
+  const loadingCycleKey = `${table.top.id}|${table.top.materialId}|${table.base.id}|${table.base.materialId}|${chair.id}|${chair.materialId}`;
 
   useEffect(() => {
     const updateViewportProfile = () => {
@@ -242,6 +234,7 @@ export const Scene = ({ className, onLoadingChange, onInitialLoadComplete }: Pro
       shadows
     >
       <LoaderBridge
+        cycleKey={loadingCycleKey}
         onLoadingChange={(active) => {
           if (onLoadingChange) onLoadingChange(active);
         }}
@@ -253,4 +246,4 @@ export const Scene = ({ className, onLoadingChange, onInitialLoadComplete }: Pro
       </Suspense>
     </Canvas>
   );
-};
+});
