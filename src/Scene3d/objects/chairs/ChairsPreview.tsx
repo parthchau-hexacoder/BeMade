@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo } from "react";
-import { ContactShadows, useGLTF, useTexture } from "@react-three/drei";
+import { useGLTF, useTexture } from "@react-three/drei";
 import { setupTexture } from "../../utility/setupTexture";
 import { useDesign } from "../../../app/providers/DesignProvider";
 import { gsap } from "gsap";
@@ -132,26 +132,68 @@ export const ChairsPreview = observer(() => {
     },
   ], []);
 
+  const shadowTexture = useMemo(() => {
+    const size = 256;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) return null;
+
+    const gradient = ctx.createRadialGradient(
+      size / 2,
+      size / 2,
+      size * 0.08,
+      size / 2,
+      size / 2,
+      size * 0.5
+    );
+    gradient.addColorStop(0, "rgba(0,0,0,0.35)");
+    gradient.addColorStop(0.45, "rgba(0,0,0,0.16)");
+    gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, size, size);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.ClampToEdgeWrapping;
+    texture.wrapT = THREE.ClampToEdgeWrapping;
+    texture.needsUpdate = true;
+    return texture;
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      shadowTexture?.dispose();
+    };
+  }, [shadowTexture]);
+
   return (
     <>
       {chairs.map((chairItem) => (
-        <ChairPreviewItem
-          key={chairItem.index}
-          item={chairItem}
-          scene={scene}
-          legMaterial={legMaterial}
-          topMaterial={topMaterial}
-        />
+        <group key={chairItem.index}>
+          <ChairPreviewItem
+            item={chairItem}
+            scene={scene}
+            legMaterial={legMaterial}
+            topMaterial={topMaterial}
+          />
+          <mesh
+            rotation={[-Math.PI / 2, 0, 0]}
+            position={[chairItem.position[0], 0.002, chairItem.position[2]]}
+          >
+            <planeGeometry args={[0.95, 0.62]} />
+            <meshBasicMaterial
+              map={shadowTexture ?? undefined}
+              transparent
+              opacity={0.65}
+              depthWrite={false}
+              toneMapped={false}
+            />
+          </mesh>
+        </group>
       ))}
-      <ContactShadows
-        key={`chair-preview-shadow-${manager.id}-${manager.materialId}`}
-        position={[0, 0, 0]}
-        scale={3}
-        blur={0.55}
-        far={1.2}
-        opacity={0.6}
-        frames={1}
-      />
     </>
   );
 });
